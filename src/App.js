@@ -1,24 +1,41 @@
-import logo from './logo.svg';
 import './App.css';
+import Home from "./Pages/Home/Home";
+import Cart from "./Pages/Cart/Cart";
+import Products from "./Pages/Products/Products";
+import ProductDetails from "./Pages/ProductDetails/ProductDetails";
+import { BrowserRouter,Routes,Route} from 'react-router-dom';
+import Navbar from './Components/Navbar';
+import supabase from './supabase';
+import { useDispatch } from 'react-redux';
+import React,{ useEffect } from 'react';
+import { setUser } from './slices/userSlices';
+
+
 
 function App() {
+  const dispatch = useDispatch();
+
+  const getUser = async () => {
+    const { data} = await supabase.auth.getSession();
+    dispatch(setUser(data.session.user));
+  };
+
+  useEffect(() => {
+    getUser();
+  }, [ ]);
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+      <BrowserRouter>
+      <Navbar />
+             <Routes>
+                    <Route path="/" element={<Home />} /> 
+                    <Route path="/products" element={<Products />} /> 
+                    <Route path="/ProductDetails/:id" element={<ProductDetails/>} /> 
+                    <Route path="/cart" element={<Cart />} />       
+            </Routes>
+      </BrowserRouter>
+    
   );
 }
 
